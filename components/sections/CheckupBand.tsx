@@ -6,18 +6,13 @@ import {
   SectionBackground,
   sectionBackgroundProps,
 } from "@/components/primitives/SectionBackground";
-import { checkup as fallback } from "@/lib/content/homepage";
 import type {
   CheckupBandSectionData,
   CheckupRow,
-  SectionContent,
 } from "@/sanity/lib/types";
 
-export function CheckupBand({ data }: { data?: CheckupBandSectionData }) {
-  // Sanity owns this section once the document has it, so fall back to repo
-  // content as a whole object. Per-field `??` would resurrect repo copy for
-  // any field the editor deliberately cleared. See SectionContent.
-  const c: SectionContent<CheckupBandSectionData> = data ?? fallback;
+export function CheckupBand({ data }: { data: CheckupBandSectionData }) {
+  const c = data;
 
   const eyebrow = c.eyebrow;
   const heading = c.heading;
@@ -31,12 +26,12 @@ export function CheckupBand({ data }: { data?: CheckupBandSectionData }) {
   return (
     <section
       id="checkup"
-      {...sectionBackgroundProps(data?.background, {
+      {...sectionBackgroundProps(data.background, {
         fallback: "teal",
         className: "py-16 md:py-20 lg:py-24",
       })}
     >
-      <SectionBackground background={data?.background} />
+      <SectionBackground background={data.background} />
       <Container className="relative z-10">
         <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-[70px]">
           <Reveal>

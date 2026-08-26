@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="320" height="200" role="img">
+  <title>Book / product feature — tilted cover beside bullets and a button</title>
+  <rect width="320" height="200" fill="#e8e3da"/>
+  <g transform="rotate(-5 88 100)">
+    <rect x="46" y="36" width="84" height="128" rx="4" fill="#1e3256"/>
+    <rect x="46" y="36" width="8" height="128" rx="2" fill="#16253f"/>
+    <rect x="64" y="64" width="52" height="6" rx="3" fill="#7ccfb5"/>
+    <rect x="64" y="76" width="38" height="6" rx="3" fill="#ffffff" opacity=".85"/>
+    <rect x="64" y="132" width="30" height="4" rx="2" fill="#c6d0e2" opacity=".6"/>
+  </g>
+  <rect x="170" y="44" width="34" height="4" rx="2" fill="#16877d"/>
+  <rect x="170" y="56" width="124" height="9" rx="4" fill="#22314e"/>
+  <rect x="170" y="70" width="92" height="9" rx="4" fill="#22314e"/>
+  <circle cx="176" cy="94" r="5" fill="#7ccfb5"/>
+  <rect x="188" y="91" width="106" height="5" rx="2.5" fill="#4e5b74" opacity=".5"/>
+  <circle cx="176" cy="110" r="5" fill="#7ccfb5"/>
+  <rect x="188" y="107" width="88" height="5" rx="2.5" fill="#4e5b74" opacity=".5"/>
+  <circle cx="176" cy="126" r="5" fill="#7ccfb5"/>
+  <rect x="188" y="123" width="98" height="5" rx="2.5" fill="#4e5b74" opacity=".5"/>
+  <rect x="170" y="142" width="66" height="20" rx="10" fill="#1e3256"/>
+</svg>

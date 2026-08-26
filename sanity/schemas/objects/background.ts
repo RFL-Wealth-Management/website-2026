@@ -50,6 +50,17 @@ export const background = defineType({
       ],
     }),
 
+    // Same image-gated rule as the overlay: nothing to drift without one.
+    defineField({
+      name: "parallax",
+      title: "Parallax",
+      type: "boolean",
+      initialValue: false,
+      hidden: ({ parent }) => !(parent as BackgroundParent)?.image?.asset,
+      description:
+        "Drifts the image slowly as the section scrolls past. Ignored for readers who prefer reduced motion, and in browsers without scroll-driven animation.",
+    }),
+
     defineField({
       name: "color",
       title: "Background colour",

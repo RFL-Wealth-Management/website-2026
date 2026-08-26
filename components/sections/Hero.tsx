@@ -5,20 +5,11 @@ import { Container } from "@/components/primitives/Container";
 import { Eyebrow } from "@/components/primitives/Eyebrow";
 import { LinkArrow } from "@/components/primitives/LinkArrow";
 import { Reveal } from "@/components/primitives/Reveal";
-import { hero as fallback } from "@/lib/content/homepage";
 import { urlForImage } from "@/sanity/lib/image";
-import type { HeroSectionData, SectionContent } from "@/sanity/lib/types";
+import type { HeroSectionData } from "@/sanity/lib/types";
 
-/**
- * Renders from Sanity when the homepage document has a hero section, and from
- * lib/content/homepage.ts otherwise — so the site still builds before the
- * dataset is seeded.
- */
-export function Hero({ data }: { data?: HeroSectionData }) {
-  // Sanity owns this section once the document has it, so fall back to repo
-  // content as a whole object. Per-field `??` would resurrect repo copy for
-  // any field the editor deliberately cleared. See SectionContent.
-  const c: SectionContent<HeroSectionData> = data ?? fallback;
+export function Hero({ data }: { data: HeroSectionData }) {
+  const c = data;
 
   const eyebrow = c.eyebrow;
   const headline = c.headline;
@@ -29,7 +20,7 @@ export function Hero({ data }: { data?: HeroSectionData }) {
   const secondaryCta = c.secondaryCta;
   const chip = c.chip;
 
-  const heroImage = data?.image?.asset
+  const heroImage = data.image?.asset
     ? urlForImage(data.image).width(900).height(1035).url()
     : null;
 
@@ -53,21 +44,23 @@ export function Hero({ data }: { data?: HeroSectionData }) {
             <p className="mt-6 max-w-[34em] text-lede text-dark-lede">{lede}</p>
           )}
 
-          <div className="mt-8 flex flex-wrap items-center gap-6">
-            {primaryCta?.href && (
-              <div>
+          {/* Both CTAs share one centred row; the note drops beneath it so it
+              cannot drag the secondary link off the button's centre line. */}
+          <div className="mt-8">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+              {primaryCta?.href && (
                 <Button href={primaryCta.href}>{primaryCta.label}</Button>
-                {primaryNote && (
-                  <p className="mt-3 max-w-[26em] text-[13px] text-dark-micro">
-                    {primaryNote}
-                  </p>
-                )}
-              </div>
-            )}
-            {secondaryCta?.href && (
-              <LinkArrow href={secondaryCta.href} className="text-seafoam">
-                {secondaryCta.label}
-              </LinkArrow>
+              )}
+              {secondaryCta?.href && (
+                <LinkArrow href={secondaryCta.href} className="text-seafoam">
+                  {secondaryCta.label}
+                </LinkArrow>
+              )}
+            </div>
+            {primaryCta?.href && primaryNote && (
+              <p className="mt-3 max-w-[26em] text-[13px] text-dark-micro">
+                {primaryNote}
+              </p>
             )}
           </div>
         </Reveal>
@@ -76,7 +69,7 @@ export function Hero({ data }: { data?: HeroSectionData }) {
           {heroImage && (
             <Image
               src={heroImage}
-              alt={data?.image?.alt ?? ""}
+              alt={data.image?.alt ?? ""}
               width={900}
               height={1035}
               priority

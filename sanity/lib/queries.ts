@@ -3,7 +3,7 @@ import { defineQuery } from "next-sanity";
 /**
  * The whole page builder. Sections are projected per `_type`; `background` sits
  * outside those blocks because every section object carries it, so it projects
- * once for all ten.
+ * once for all of them.
  */
 export const HOMEPAGE_QUERY = defineQuery(`
   *[_type == "page" && isHomepage == true][0]{
@@ -11,7 +11,7 @@ export const HOMEPAGE_QUERY = defineQuery(`
     sections[]{
       _key,
       _type,
-      background{ image, overlay, color },
+      background{ image, overlay, color, parallax },
 
       _type == "heroSection" => {
         eyebrow, headline, headlineAlt, lede,
@@ -54,9 +54,9 @@ export const HOMEPAGE_QUERY = defineQuery(`
         cta
       },
 
-      _type == "teamGridSection" => {
-        eyebrow, heading, side,
-        members[]{ _key, name, cred, body, image },
+      _type == "gridSection" => {
+        eyebrow, heading, side, bodyLabel,
+        items[]{ _key, title, subtitle, body, image },
         footLink
       },
 
@@ -70,6 +70,10 @@ export const HOMEPAGE_QUERY = defineQuery(`
       _type == "dualPathCtaSection" => {
         eyebrow, heading,
         paths[]{ _key, kind, title, body, cta, variant }
+      },
+
+      _type == "textSection" => {
+        eyebrow, heading, lede, footLink
       }
     }
   }

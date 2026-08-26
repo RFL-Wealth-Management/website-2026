@@ -8,9 +8,10 @@ export const SECTION_TYPES = [
   "stageStepsSection",
   "storyFeatureSection",
   "differenceGridSection",
-  "teamGridSection",
+  "gridSection",
   "insightsGridSection",
   "dualPathCtaSection",
+  "textSection",
 ] as const;
 
 export const page = defineType({
@@ -53,7 +54,20 @@ export const page = defineType({
       type: "array",
       group: "content",
       of: SECTION_TYPES.map((type) => defineArrayMember({ type })),
-      options: { insertMenu: { views: [{ name: "grid" }, { name: "list" }] } },
+      options: {
+        insertMenu: {
+          views: [
+            {
+              name: "grid",
+              // Wireframe thumbnails live in public/sections/ and are named
+              // after the schema type, so a new section type only needs a
+              // matching SVG dropped in beside the others.
+              previewImageUrl: (schemaType) => `/sections/${schemaType}.svg`,
+            },
+            { name: "list" },
+          ],
+        },
+      },
     }),
 
     // ---- SEO -----------------------------------------------------------

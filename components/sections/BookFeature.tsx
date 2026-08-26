@@ -8,18 +8,13 @@ import {
   SectionBackground,
   sectionBackgroundProps,
 } from "@/components/primitives/SectionBackground";
-import { book as fallback } from "@/lib/content/homepage";
 import { urlForImage } from "@/sanity/lib/image";
 import type {
   FeatureProductSectionData,
-  SectionContent,
 } from "@/sanity/lib/types";
 
-export function BookFeature({ data }: { data?: FeatureProductSectionData }) {
-  // Sanity owns this section once the document has it, so fall back to repo
-  // content as a whole object. Per-field `??` would resurrect repo copy for
-  // any field the editor deliberately cleared. See SectionContent.
-  const c: SectionContent<FeatureProductSectionData> = data ?? fallback;
+export function BookFeature({ data }: { data: FeatureProductSectionData }) {
+  const c = data;
 
   const eyebrow = c.eyebrow;
   const heading = c.heading;
@@ -31,26 +26,26 @@ export function BookFeature({ data }: { data?: FeatureProductSectionData }) {
 
   // A real cover photo wins; otherwise the typeset cover stands in — it is a
   // designed element, not a placeholder awaiting art.
-  const coverImage = data?.coverImage?.asset
+  const coverImage = data.coverImage?.asset
     ? urlForImage(data.coverImage).width(600).url()
     : null;
 
   return (
     <section
       id="book"
-      {...sectionBackgroundProps(data?.background, {
+      {...sectionBackgroundProps(data.background, {
         fallback: "stone",
         className: "py-16 md:py-20 lg:py-24",
       })}
     >
-      <SectionBackground background={data?.background} />
+      <SectionBackground background={data.background} />
       <Container className="relative z-10">
         <div className="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
           <Reveal className="grid place-items-center py-4">
             {coverImage ? (
               <Image
                 src={coverImage}
-                alt={data?.coverImage?.alt ?? cover?.title ?? ""}
+                alt={data.coverImage?.alt ?? cover?.title ?? ""}
                 width={600}
                 height={870}
                 className="w-[min(300px,68%)] rotate-[-2.5deg] rounded-[6px_14px_14px_6px] shadow-[-24px_30px_60px_rgba(30,50,86,0.35)]"

@@ -2,17 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Container } from "@/components/primitives/Container";
-import { FALLBACK_SETTINGS } from "@/lib/content/settings";
 import type {
   FooterColumn,
   FooterLink,
-  SiteSettingsData,
+  SiteSettings,
 } from "@/sanity/lib/types";
 
-export function SiteFooter({ settings }: { settings?: SiteSettingsData }) {
-  // Whole-object fallback — see FALLBACK_SETTINGS. Anything the editor clears
-  // in the Studio stays cleared instead of reverting to repo copy.
-  const s = settings ?? FALLBACK_SETTINGS;
+export function SiteFooter({ settings }: { settings: SiteSettings }) {
+  const s = settings;
 
   const blurb = s.footerBlurb;
   const newsletter = s.newsletter;

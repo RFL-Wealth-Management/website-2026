@@ -182,25 +182,26 @@ export const team = {
   heading:
     "Your financial life should never feel like a file being passed around.",
   side: "Credentials, accountability, and one restrained personal detail each — after relevance and proof, the humans.",
-  members: [
+  bodyLabel: "Count on me for:",
+  items: [
     {
-      name: "Team Member",
-      cred: "CFP® · Role Title",
+      title: "Team Member",
+      subtitle: "CFP® · Role Title",
       body: "keeping your corporate and personal plans speaking the same language.",
     },
     {
-      name: "Team Member",
-      cred: "CPA, CA · Role Title",
+      title: "Team Member",
+      subtitle: "CPA, CA · Role Title",
       body: "straight answers on tax — and catching what filings alone won't.",
     },
     {
-      name: "Team Member",
-      cred: "CIM® · Role Title",
+      title: "Team Member",
+      subtitle: "CIM® · Role Title",
       body: "an investment strategy that fits the plan, not the product shelf.",
     },
     {
-      name: "Team Member",
-      cred: "CLU® · Role Title",
+      title: "Team Member",
+      subtitle: "CLU® · Role Title",
       body: "making sure the plan survives the things we hope never happen.",
     },
   ],

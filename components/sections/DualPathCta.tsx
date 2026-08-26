@@ -6,18 +6,13 @@ import {
   SectionBackground,
   sectionBackgroundProps,
 } from "@/components/primitives/SectionBackground";
-import { final as fallback } from "@/lib/content/homepage";
 import type {
   CtaPath,
   DualPathCtaSectionData,
-  SectionContent,
 } from "@/sanity/lib/types";
 
-export function DualPathCta({ data }: { data?: DualPathCtaSectionData }) {
-  // Sanity owns this section once the document has it, so fall back to repo
-  // content as a whole object. Per-field `??` would resurrect repo copy for
-  // any field the editor deliberately cleared. See SectionContent.
-  const c: SectionContent<DualPathCtaSectionData> = data ?? fallback;
+export function DualPathCta({ data }: { data: DualPathCtaSectionData }) {
+  const c = data;
 
   const eyebrow = c.eyebrow;
   const heading = c.heading;
@@ -26,12 +21,12 @@ export function DualPathCta({ data }: { data?: DualPathCtaSectionData }) {
   return (
     <section
       id="final"
-      {...sectionBackgroundProps(data?.background, {
+      {...sectionBackgroundProps(data.background, {
         fallback: "navy",
         className: "py-16 md:py-20 lg:py-24",
       })}
     >
-      <SectionBackground background={data?.background} />
+      <SectionBackground background={data.background} />
       <Container className="relative z-10">
         <Reveal>
           {eyebrow && <Eyebrow className="text-seafoam">{eyebrow}</Eyebrow>}

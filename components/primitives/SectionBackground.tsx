@@ -5,7 +5,7 @@ import {
   type BackgroundColor,
   type BackgroundData,
   backgroundClass,
-  isDarkBackground,
+  isDarkSection,
   overlayClass,
 } from "@/lib/background";
 import { cn } from "@/lib/cn";
@@ -40,7 +40,9 @@ export function sectionBackgroundProps(
       backgroundClass(color),
       options?.className,
     ),
-    ...(isDarkBackground(color) ? { "data-theme": "dark" as const } : {}),
+    ...(isDarkSection(background, options?.fallback)
+      ? { "data-theme": "dark" as const }
+      : {}),
   };
 }
 
@@ -63,16 +65,21 @@ export function SectionBackground({
   // value so an image added before the slider is touched still gets tinted.
   const opacity = (background.overlay?.opacity ?? 50) / 100;
 
+  // Oversized and pulled upwards when drifting, so the translate never
+  // exposes an edge of the image inside the section's overflow-hidden box.
+  const parallax = background.parallax === true;
+
   return (
     <>
-      <Image
-        src={src}
-        alt=""
+      <div
         aria-hidden="true"
-        fill
-        sizes="100vw"
-        className="pointer-events-none -z-10 object-cover"
-      />
+        className={cn(
+          "pointer-events-none absolute inset-x-0 -z-10",
+          parallax ? "section-parallax -top-[12%] h-[124%]" : "inset-y-0",
+        )}
+      >
+        <Image src={src} alt="" fill sizes="100vw" className="object-cover" />
+      </div>
       {opacity > 0 && (
         <div
           aria-hidden="true"

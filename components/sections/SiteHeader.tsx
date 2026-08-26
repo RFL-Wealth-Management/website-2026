@@ -6,15 +6,12 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/primitives/Button";
 import { Container } from "@/components/primitives/Container";
-import { FALLBACK_SETTINGS } from "@/lib/content/settings";
-import type { NavItem, SiteSettingsData } from "@/sanity/lib/types";
+import type { NavItem, SiteSettings } from "@/sanity/lib/types";
 
-export function SiteHeader({ settings }: { settings?: SiteSettingsData }) {
+export function SiteHeader({ settings }: { settings: SiteSettings }) {
   const [open, setOpen] = useState(false);
 
-  // Whole-object fallback: a nav item or CTA cleared in the Studio must stay
-  // cleared, not fall back to repo copy field by field.
-  const s = settings ?? FALLBACK_SETTINGS;
+  const s = settings;
   const items: readonly NavItem[] = s.navItems ?? [];
   const cta = s.navCta;
 

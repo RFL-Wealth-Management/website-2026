@@ -9,12 +9,10 @@ import {
   SectionBackground,
   sectionBackgroundProps,
 } from "@/components/primitives/SectionBackground";
-import { insights as fallback } from "@/lib/content/homepage";
 import { urlForImage } from "@/sanity/lib/image";
 import type {
   InsightCard,
   InsightsGridSectionData,
-  SectionContent,
   WideCard,
 } from "@/sanity/lib/types";
 
@@ -25,11 +23,8 @@ const TAG_TONES: Record<string, string> = {
   guide: "bg-sand text-[#7A5A38]",
 };
 
-export function InsightsGrid({ data }: { data?: InsightsGridSectionData }) {
-  // Sanity owns this section once the document has it, so fall back to repo
-  // content as a whole object. Per-field `??` would resurrect repo copy for
-  // any field the editor deliberately cleared. See SectionContent.
-  const c: SectionContent<InsightsGridSectionData> = data ?? fallback;
+export function InsightsGrid({ data }: { data: InsightsGridSectionData }) {
+  const c = data;
 
   const eyebrow = c.eyebrow;
   const heading = c.heading;
@@ -39,17 +34,17 @@ export function InsightsGrid({ data }: { data?: InsightsGridSectionData }) {
   const cards: readonly InsightCard[] = c.cards ?? [];
 
   const thumbnail =
-    data?.wide?.thumbnail?.asset && urlForImage(data.wide.thumbnail).width(640);
+    data.wide?.thumbnail?.asset && urlForImage(data.wide.thumbnail).width(640);
 
   return (
     <section
       id="insights"
-      {...sectionBackgroundProps(data?.background, {
+      {...sectionBackgroundProps(data.background, {
         fallback: "cream",
         className: "py-16 md:py-20 lg:py-24",
       })}
     >
-      <SectionBackground background={data?.background} />
+      <SectionBackground background={data.background} />
       <Container className="relative z-10">
         <Reveal className="mb-10 flex flex-wrap items-end justify-between gap-6 lg:mb-13">
           <div>

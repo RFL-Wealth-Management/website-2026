@@ -14,10 +14,9 @@ type SectionBase = {
 };
 
 /**
- * `_key` is optional on every array item below. GROQ always returns one, but
- * the repo-authored fallbacks in lib/content/homepage.ts do not have keys —
- * making it optional lets one type describe both sources, so components read
- * `card.href` directly instead of narrowing a union at every property access.
+ * `_key` is optional on every array item below. GROQ always returns one; it
+ * stays optional so the same types describe the objects scripts/seed.ts
+ * builds from lib/content/homepage.ts, which are keyed on the way in.
  */
 
 /** Heading block shared by the grid-style sections. */
@@ -47,10 +46,10 @@ export type StoryFact = { _key?: string; label?: string; body?: string };
 
 export type DifferenceItem = { _key?: string; title?: string; body?: string };
 
-export type TeamMember = {
+export type GridItem = {
   _key?: string;
-  name?: string;
-  cred?: string;
+  title?: string;
+  subtitle?: string;
   body?: string;
   image?: SanityImageWithAlt;
 };
@@ -152,10 +151,11 @@ export type DifferenceGridSectionData = SectionBase &
     cta?: Cta;
   };
 
-export type TeamGridSectionData = SectionBase &
+export type GridSectionData = SectionBase &
   SectionHeading & {
-    _type: "teamGridSection";
-    members?: readonly TeamMember[];
+    _type: "gridSection";
+    bodyLabel?: string;
+    items?: readonly GridItem[];
     footLink?: Cta;
   };
 
@@ -174,6 +174,14 @@ export type DualPathCtaSectionData = SectionBase & {
   paths?: readonly CtaPath[];
 };
 
+export type TextSectionData = SectionBase & {
+  _type: "textSection";
+  eyebrow?: string;
+  heading?: string;
+  lede?: string;
+  footLink?: Cta;
+};
+
 export type SectionData =
   | HeroSectionData
   | QuestionGridSectionData
@@ -182,28 +190,16 @@ export type SectionData =
   | StageStepsSectionData
   | StoryFeatureSectionData
   | DifferenceGridSectionData
-  | TeamGridSectionData
+  | GridSectionData
   | InsightsGridSectionData
-  | DualPathCtaSectionData;
+  | DualPathCtaSectionData
+  | TextSectionData;
 
 export type HomepageData = {
   title?: string;
   sections?: SectionData[];
 } | null;
 
-/**
- * Narrows the page-builder array to one section by `_type`, returning that
- * member's own type — `findSection(sections, "teamGridSection")` gives back a
- * `TeamGridSectionData | undefined` with no cast at the call site.
- */
-export function findSection<T extends SectionData["_type"]>(
-  sections: SectionData[] | undefined,
-  type: T,
-): Extract<SectionData, { _type: T }> | undefined {
-  return sections?.find(
-    (s): s is Extract<SectionData, { _type: T }> => s._type === type,
-  );
-}
 
 export type NavItem = {
   _key?: string;
@@ -237,19 +233,11 @@ export type SiteSettingsData = {
 } | null;
 
 /**
- * A section's editable fields, without the page-builder plumbing.
+ * The document shapes after the loader has ruled out "missing".
  *
- * Components fall back to repo content as ONE object (`data ?? fallback`)
- * rather than field by field. Per-field `??` cannot express deletion: a field
- * the editor clears comes back `undefined` and resurrects the repo default,
- * so removing a CTA in the Studio would never reach the page. Falling back
- * wholesale means Sanity owns the section the moment the document has it —
- * including the fields it deliberately leaves empty.
- *
- * `background` is excluded because it is Sanity-only; it is read from `data`
- * directly, never from the fallback.
+ * Components take these, not the nullable query types: with no content
+ * fallbacks, a missing document is a 503 decided in app/page.tsx, never
+ * something a section has to render around.
  */
-export type SectionContent<T extends SectionData> = Omit<
-  T,
-  "_key" | "_type" | "background"
->;
+export type Homepage = NonNullable<HomepageData>;
+export type SiteSettings = NonNullable<SiteSettingsData>;

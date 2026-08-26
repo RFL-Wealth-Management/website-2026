@@ -118,11 +118,12 @@ const homepage = {
       cta: { _type: "cta", ...c.difference.cta },
     },
     {
-      _type: "teamGridSection",
+      _type: "gridSection",
       eyebrow: c.team.eyebrow,
       heading: c.team.heading,
       side: c.team.side,
-      members: withKeys(c.team.members),
+      bodyLabel: c.team.bodyLabel,
+      items: withKeys(c.team.items),
       footLink: { _type: "cta", ...c.team.footLink },
     },
     {

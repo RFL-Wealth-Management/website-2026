@@ -8,6 +8,7 @@ import {
   featureProductSection,
   stageStepsSection,
 } from "./objects/sections/checkup";
+import { gridSection } from "./objects/sections/grid";
 import { heroSection, questionGridSection } from "./objects/sections/hero";
 import {
   dualPathCtaSection,
@@ -16,8 +17,8 @@ import {
 import {
   differenceGridSection,
   storyFeatureSection,
-  teamGridSection,
 } from "./objects/sections/story";
+import { textSection } from "./objects/sections/text";
 import { seo } from "./objects/seo";
 import { siteSettings } from "./singletons/siteSettings";
 
@@ -39,7 +40,8 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   stageStepsSection,
   storyFeatureSection,
   differenceGridSection,
-  teamGridSection,
+  gridSection,
   insightsGridSection,
   dualPathCtaSection,
+  textSection,
 ];

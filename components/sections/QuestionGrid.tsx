@@ -8,18 +8,13 @@ import {
   SectionBackground,
   sectionBackgroundProps,
 } from "@/components/primitives/SectionBackground";
-import { questions as fallback } from "@/lib/content/homepage";
 import type {
   QuestionCard,
   QuestionGridSectionData,
-  SectionContent,
 } from "@/sanity/lib/types";
 
-export function QuestionGrid({ data }: { data?: QuestionGridSectionData }) {
-  // Sanity owns this section once the document has it, so fall back to repo
-  // content as a whole object. Per-field `??` would resurrect repo copy for
-  // any field the editor deliberately cleared. See SectionContent.
-  const c: SectionContent<QuestionGridSectionData> = data ?? fallback;
+export function QuestionGrid({ data }: { data: QuestionGridSectionData }) {
+  const c = data;
 
   const eyebrow = c.eyebrow;
   const heading = c.heading;
@@ -31,12 +26,12 @@ export function QuestionGrid({ data }: { data?: QuestionGridSectionData }) {
   return (
     <section
       id="questions"
-      {...sectionBackgroundProps(data?.background, {
+      {...sectionBackgroundProps(data.background, {
         fallback: "cream",
         className: "py-16 md:py-20 lg:py-24",
       })}
     >
-      <SectionBackground background={data?.background} />
+      <SectionBackground background={data.background} />
       <Container className="relative z-10">
         <Reveal className="mb-10 flex flex-wrap items-end justify-between gap-6 lg:mb-13">
           <div>

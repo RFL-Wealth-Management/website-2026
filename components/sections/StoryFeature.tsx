@@ -8,19 +8,14 @@ import {
   SectionBackground,
   sectionBackgroundProps,
 } from "@/components/primitives/SectionBackground";
-import { story as fallback } from "@/lib/content/homepage";
 import { urlForImage } from "@/sanity/lib/image";
 import type {
-  SectionContent,
   StoryFact,
   StoryFeatureSectionData,
 } from "@/sanity/lib/types";
 
-export function StoryFeature({ data }: { data?: StoryFeatureSectionData }) {
-  // Sanity owns this section once the document has it, so fall back to repo
-  // content as a whole object. Per-field `??` would resurrect repo copy for
-  // any field the editor deliberately cleared. See SectionContent.
-  const c: SectionContent<StoryFeatureSectionData> = data ?? fallback;
+export function StoryFeature({ data }: { data: StoryFeatureSectionData }) {
+  const c = data;
 
   const eyebrow = c.eyebrow;
   const heading = c.heading;
@@ -31,19 +26,19 @@ export function StoryFeature({ data }: { data?: StoryFeatureSectionData }) {
   const footLink = c.footLink;
   const facts: readonly StoryFact[] = c.facts ?? [];
 
-  const portrait = data?.image?.asset
+  const portrait = data.image?.asset
     ? urlForImage(data.image).width(800).height(960).url()
     : null;
 
   return (
     <section
       id="story"
-      {...sectionBackgroundProps(data?.background, {
+      {...sectionBackgroundProps(data.background, {
         fallback: "navy",
         className: "py-16 md:py-20 lg:py-24",
       })}
     >
-      <SectionBackground background={data?.background} />
+      <SectionBackground background={data.background} />
       <Container className="relative z-10">
         <Reveal>
           {eyebrow && <Eyebrow className="text-seafoam">{eyebrow}</Eyebrow>}
@@ -64,7 +59,7 @@ export function StoryFeature({ data }: { data?: StoryFeatureSectionData }) {
             <Reveal>
               <Image
                 src={portrait}
-                alt={data?.image?.alt ?? ""}
+                alt={data.image?.alt ?? ""}
                 width={800}
                 height={960}
                 className="aspect-[4/4.8] w-full rounded-card object-cover"

@@ -110,3 +110,31 @@
     }
   }
 }
+
+/* Section background parallax — opt in per section from the Studio.
+
+   Scroll-driven, so it costs no JavaScript and simply does not run where
+   `animation-timeline` is unsupported: the image sits still instead, which is
+   the right failure mode for a decorative effect.
+
+   The reduced-motion guard is explicit rather than inherited. The block in
+   @layer base clamps `animation-duration`, but a view()-driven animation takes
+   its progress from the timeline and ignores duration entirely — that rule
+   alone would not stop this one. */
+@keyframes section-parallax {
+  from {
+    transform: translate3d(0, -8%, 0);
+  }
+  to {
+    transform: translate3d(0, 8%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .section-parallax {
+      animation: section-parallax linear both;
+      animation-timeline: view();
+    }
+  }
+}

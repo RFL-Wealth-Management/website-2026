@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="320" height="200" role="img">
+  <title>Question grid — three question cards, each with a tag and arrow</title>
+  <rect width="320" height="200" fill="#fcfaf5"/>
+  <rect x="18" y="18" width="32" height="4" rx="2" fill="#16877d"/>
+  <rect x="18" y="30" width="126" height="8" rx="3" fill="#22314e"/>
+  <rect x="18" y="43" width="86" height="8" rx="3" fill="#22314e"/>
+  <rect x="214" y="34" width="88" height="4" rx="2" fill="#4e5b74" opacity=".45"/>
+  <rect x="214" y="43" width="66" height="4" rx="2" fill="#4e5b74" opacity=".45"/>
+  <g>
+    <rect x="18" y="66" width="92" height="80" rx="7" fill="#ffffff" stroke="#eae4d9"/>
+    <rect x="30" y="80" width="64" height="7" rx="3" fill="#22314e"/>
+    <rect x="30" y="92" width="46" height="7" rx="3" fill="#22314e"/>
+    <rect x="30" y="124" width="32" height="4" rx="2" fill="#16877d"/>
+    <circle cx="90" cy="126" r="9" fill="#fcfaf5" stroke="#eae4d9"/>
+  </g>
+  <g>
+    <rect x="114" y="66" width="92" height="80" rx="7" fill="#ffffff" stroke="#eae4d9"/>
+    <rect x="126" y="80" width="64" height="7" rx="3" fill="#22314e"/>
+    <rect x="126" y="92" width="52" height="7" rx="3" fill="#22314e"/>
+    <rect x="126" y="124" width="38" height="4" rx="2" fill="#16877d"/>
+    <circle cx="186" cy="126" r="9" fill="#fcfaf5" stroke="#eae4d9"/>
+  </g>
+  <g>
+    <rect x="210" y="66" width="92" height="80" rx="7" fill="#ffffff" stroke="#eae4d9"/>
+    <rect x="222" y="80" width="64" height="7" rx="3" fill="#22314e"/>
+    <rect x="222" y="92" width="40" height="7" rx="3" fill="#22314e"/>
+    <rect x="222" y="124" width="34" height="4" rx="2" fill="#16877d"/>
+    <circle cx="282" cy="126" r="9" fill="#fcfaf5" stroke="#eae4d9"/>
+  </g>
+  <rect x="18" y="162" width="72" height="5" rx="2.5" fill="#16877d"/>
+</svg>

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="320" height="200" role="img">
+  <title>Team grid — four portrait cards with name and credential</title>
+  <rect width="320" height="200" fill="#e8e3da"/>
+  <rect x="18" y="18" width="32" height="4" rx="2" fill="#16877d"/>
+  <rect x="18" y="30" width="126" height="8" rx="3" fill="#22314e"/>
+  <rect x="18" y="43" width="86" height="8" rx="3" fill="#22314e"/>
+  <rect x="214" y="34" width="88" height="4" rx="2" fill="#4e5b74" opacity=".45"/>
+  <rect x="214" y="43" width="66" height="4" rx="2" fill="#4e5b74" opacity=".45"/>
+  <g>
+    <rect x="18" y="66" width="65" height="106" rx="7" fill="#ffffff"/>
+    <path d="M25 66h51a7 7 0 0 1 7 7v57H18V73a7 7 0 0 1 7-7z" fill="#cfc7b9"/>
+    <rect x="28" y="140" width="42" height="5" rx="2.5" fill="#22314e"/>
+    <rect x="28" y="150" width="28" height="4" rx="2" fill="#16877d"/>
+    <rect x="28" y="160" width="46" height="4" rx="2" fill="#4e5b74" opacity=".45"/>
+  </g>
+  <g>
+    <rect x="91" y="66" width="65" height="106" rx="7" fill="#ffffff"/>
+    <path d="M98 66h51a7 7 0 0 1 7 7v57H91V73a7 7 0 0 1 7-7z" fill="#cfc7b9"/>
+    <rect x="101" y="140" width="42" height="5" rx="2.5" fill="#22314e"/>
+    <rect x="101" y="150" width="24" height="4" rx="2" fill="#16877d"/>
+    <rect x="101" y="160" width="46" height="4" rx="2" fill="#4e5b74" opacity=".45"/>
+  </g>
+  <g>
+    <rect x="164" y="66" width="65" height="106" rx="7" fill="#ffffff"/>
+    <path d="M171 66h51a7 7 0 0 1 7 7v57h-65V73a7 7 0 0 1 7-7z" fill="#cfc7b9"/>
+    <rect x="174" y="140" width="42" height="5" rx="2.5" fill="#22314e"/>
+    <rect x="174" y="150" width="30" height="4" rx="2" fill="#16877d"/>
+    <rect x="174" y="160" width="46" height="4" rx="2" fill="#4e5b74" opacity=".45"/>
+  </g>
+  <g>
+    <rect x="237" y="66" width="65" height="106" rx="7" fill="#ffffff"/>
+    <path d="M244 66h51a7 7 0 0 1 7 7v57h-65V73a7 7 0 0 1 7-7z" fill="#cfc7b9"/>
+    <rect x="247" y="140" width="42" height="5" rx="2.5" fill="#22314e"/>
+    <rect x="247" y="150" width="26" height="4" rx="2" fill="#16877d"/>
+    <rect x="247" y="160" width="46" height="4" rx="2" fill="#4e5b74" opacity=".45"/>
+  </g>
+</svg>
