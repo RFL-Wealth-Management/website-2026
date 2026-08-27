@@ -32,7 +32,7 @@
   --color-hairline: #eae4d9; /* card borders on cream */
 
   /* Typography */
-  --font-serif: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-serif: var(--font-lora), Georgia, "Times New Roman", serif;
   --font-sans: var(--font-inter), -apple-system, "Segoe UI", Roboto, sans-serif;
 
   /* Fluid type scale — replaces the mockup's max-width breakpoints */

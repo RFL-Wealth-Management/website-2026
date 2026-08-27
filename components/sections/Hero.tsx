@@ -34,7 +34,7 @@ export function Hero({ data }: { data: HeroSectionData }) {
             {headlineAlt && (
               <>
                 <br />
-                <span className="font-[380] text-seafoam italic">
+                <span className="font-normal text-seafoam italic">
                   {headlineAlt}
                 </span>
               </>
