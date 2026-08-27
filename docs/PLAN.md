@@ -35,7 +35,7 @@ navy #1E3256 · teal #16877D · seafoam #7CCFB5 · cream #FCFAF5
 stone #E8E3DA · camel #C49676 · sand #EED3B4 · ink #22314E · ink-soft #4E5B74
 ```
 
-Type: **Fraunces** (display serif, weights 380/500/600 + italic) and **Inter** (400/500/600), loaded via `next/font` — self-hosted, so no render-blocking request to Google and no layout shift.
+Type: **Lora** (display serif, weights 400/500/600 + italic) and **Inter** (400/500/600), loaded via `next/font` — self-hosted, so no render-blocking request to Google and no layout shift.
 
 Radius `18px`, container max-width `1180px`, gutter `32px`.
 
