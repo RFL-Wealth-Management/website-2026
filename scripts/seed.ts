@@ -159,7 +159,9 @@ const homepage = {
 const settings = {
   _id: "siteSettings",
   _type: "siteSettings",
-  navItems: withKeys(c.nav.items.map((i) => ({ ...i, children: [] }))),
+  navItems: withKeys(
+    c.nav.items.map((i) => ({ ...i, children: withKeys(i.children ?? []) })),
+  ),
   navCta: { _type: "cta", ...c.nav.cta },
   footerBlurb: c.footer.blurb,
   footerColumns: withKeys(

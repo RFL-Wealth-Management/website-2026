@@ -5,9 +5,30 @@
  * so the section components below don't change when content moves to the CMS.
  */
 
-export const nav = {
+type NavLink = { label: string; href: string };
+type NavEntry = NavLink & { children?: readonly NavLink[] };
+
+export const nav: { items: readonly NavEntry[]; cta: NavLink } = {
   items: [
-    { label: "Financial Questions", href: "#questions" },
+    {
+      label: "Financial Questions",
+      href: "#questions",
+      // Placeholder hrefs: each of these becomes its own `page` document
+      // (§3 of docs/PLAN.md) once the question pages are built. Until then
+      // they anchor to the grid on the homepage rather than dead-ending on "#".
+      children: [
+        { label: "Am I Paying Too Much Tax?", href: "#questions" },
+        {
+          label: "Is My Medical Corporation Set Up Properly?",
+          href: "#questions",
+        },
+        { label: "Am I Investing in the Right Places?", href: "#questions" },
+        { label: "How Much Is Enough?", href: "#questions" },
+        { label: "Can I Afford to Work Less?", href: "#questions" },
+        { label: "What Happens if I Cannot Work?", href: "#questions" },
+        { label: "Am I Getting Truly Unbiased Advice?", href: "#questions" },
+      ],
+    },
     { label: "How RFL Helps", href: "#works" },
     { label: "Tax Free MD", href: "#book" },
     { label: "Insights", href: "#insights" },
