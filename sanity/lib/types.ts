@@ -174,6 +174,31 @@ export type DualPathCtaSectionData = SectionBase & {
   paths?: readonly CtaPath[];
 };
 
+export type FaqItem = {
+  _key?: string;
+  question?: string;
+  answer?: string;
+  cta?: Cta;
+};
+
+/**
+ * A reusable FAQ document, dereferenced by the section that points at it.
+ *
+ * Optional all the way down because the reference can dangle: deleting the FAQ
+ * document leaves the section on the page with nothing behind it.
+ */
+export type FaqDoc = {
+  _id?: string;
+  title?: string;
+  items?: readonly FaqItem[];
+};
+
+export type FaqSectionData = SectionBase &
+  SectionHeading & {
+    _type: "faqSection";
+    faq?: FaqDoc | null;
+  };
+
 export type TextSectionData = SectionBase & {
   _type: "textSection";
   eyebrow?: string;
@@ -193,12 +218,33 @@ export type SectionData =
   | GridSectionData
   | InsightsGridSectionData
   | DualPathCtaSectionData
+  | FaqSectionData
   | TextSectionData;
 
 export type HomepageData = {
   title?: string;
   sections?: SectionData[];
 } | null;
+
+/**
+ * A page reached through /[...slug]. Carries the fields the homepage does not
+ * need: where it sits in the URL, and the seofields object generateMetadata
+ * hands to buildSeoMeta().
+ */
+export type PageData = {
+  title?: string;
+  isGroupIndex?: boolean;
+  groupSlug?: string | null;
+  seo?: unknown;
+  sections?: SectionData[];
+} | null;
+
+/** One row of PAGE_PATHS_QUERY. */
+export type PagePathRow = {
+  slug?: string | null;
+  isGroupIndex?: boolean | null;
+  groupSlug?: string | null;
+};
 
 
 export type NavItem = {
@@ -240,4 +286,5 @@ export type SiteSettingsData = {
  * something a section has to render around.
  */
 export type Homepage = NonNullable<HomepageData>;
+export type Page = NonNullable<PageData>;
 export type SiteSettings = NonNullable<SiteSettingsData>;

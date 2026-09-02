@@ -1,16 +1,27 @@
 /**
- * Seeds the homepage and site settings into Sanity from lib/content/homepage.ts.
+ * Seeds the site's repo-authored content into Sanity from lib/content/.
  *
  *   npm run seed
+ *
+ * Writes: the homepage, site settings, the Financial Questions group and its
+ * three pages, and the two reusable FAQ documents those pages reference.
  *
  * Safe to re-run. Uses createIfNotExists + a targeted patch rather than
  * createOrReplace, so images and edits made in the Studio survive a re-seed.
  * Only the fields listed below are overwritten; image fields are never touched.
+ *
+ * One thing it does clobber: `navItems`. Nav edits made in the Studio are
+ * overwritten by whatever lib/content/homepage.ts says. Change the content
+ * file, not the Studio, if you want a nav change to survive.
  */
 
 import { createClient } from "@sanity/client";
 
+import { physicianTaxFaqs, medicalCorporationFaqs } from "../lib/content/faqs.ts";
 import * as c from "../lib/content/homepage.ts";
+import * as corporation from "../lib/content/questions/corporation.ts";
+import * as hub from "../lib/content/questions/hub.ts";
+import * as tax from "../lib/content/questions/tax.ts";
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
@@ -66,7 +77,7 @@ const homepage = {
       eyebrow: c.questions.eyebrow,
       heading: c.questions.heading,
       side: c.questions.side,
-      cards: withKeys(c.questions.cards.map((x) => ({ ...x, href: "#" }))),
+      cards: withKeys(c.questions.cards),
       footLink: { _type: "cta", ...c.questions.footLink },
     },
     {
@@ -176,6 +187,228 @@ const settings = {
   disclaimer: c.footer.note,
 };
 
+/* ---------------------------------------------------------------------------
+   Financial Questions
+
+   Section builders, because the three pages in this group share most of their
+   spine and differ only in copy. Each returns the object shape the matching
+   schema in sanity/schemas/objects/sections/ expects.
+--------------------------------------------------------------------------- */
+
+type Link = { label: string; href: string };
+const cta = (link: Link) => ({ _type: "cta", ...link });
+
+/**
+ * The shape a question-page content module exports.
+ *
+ * Named here rather than inferred with `typeof tax`, so corporation.ts is
+ * checked against the contract instead of being cast into it — the two files
+ * name their middle section differently (`leaks` vs `structure`), which is why
+ * it is passed in separately.
+ */
+type QuestionPageModule = {
+  meta: { id: string; title: string; slug: string };
+  hero: typeof tax.hero;
+  signs: typeof tax.signs;
+  checkup: typeof tax.checkup;
+  book: typeof tax.book;
+  story: typeof tax.story;
+  faq: typeof tax.faq;
+  others: QuestionGridContent;
+  final: typeof tax.final;
+};
+
+type QuestionGridContent = {
+  eyebrow: string;
+  heading: string;
+  side: string;
+  cards: readonly { q: string; tag: string; href: string }[];
+  footLink: Link;
+};
+
+/**
+ * Explicit background colours, set only where the component fallbacks would
+ * otherwise put two same-toned sections next to each other. Everything else
+ * inherits its fallback, so the page keeps alternating without an editor
+ * having to maintain the rhythm by hand.
+ */
+const stone = { _type: "background", color: "stone" };
+
+const heroSection = (h: typeof tax.hero) => ({
+  _type: "heroSection",
+  eyebrow: h.eyebrow,
+  headline: h.headline,
+  headlineAlt: h.headlineAlt,
+  lede: h.lede,
+  primaryCta: cta(h.primaryCta),
+  primaryNote: h.primaryNote,
+  secondaryCta: cta(h.secondaryCta),
+  chip: h.chip,
+});
+
+const differenceSection = (d: typeof tax.signs) => ({
+  _type: "differenceGridSection",
+  eyebrow: d.eyebrow,
+  heading: d.heading,
+  side: d.side,
+  items: withKeys(d.items),
+  cta: cta(d.cta),
+});
+
+const stageSection = (st: typeof tax.leaks) => ({
+  _type: "stageStepsSection",
+  background: stone,
+  eyebrow: st.eyebrow,
+  heading: st.heading,
+  side: st.side,
+  stages: withKeys(st.stages),
+  footLink: cta(st.footLink),
+});
+
+const checkupSection = (k: typeof tax.checkup) => ({
+  _type: "checkupBandSection",
+  eyebrow: k.eyebrow,
+  heading: k.heading,
+  lede: k.lede,
+  cta: cta(k.cta),
+  note: k.note,
+  scanTitle: k.scanTitle,
+  scanBadge: k.scanBadge,
+  rows: withKeys(k.rows),
+});
+
+const bookSection = (b: typeof tax.book) => ({
+  _type: "featureProductSection",
+  eyebrow: b.eyebrow,
+  heading: b.heading,
+  lede: b.lede,
+  bullets: [...b.bullets],
+  cta: cta(b.cta),
+  note: b.note,
+  cover: b.cover,
+});
+
+const storySection = (st: typeof tax.story) => ({
+  _type: "storyFeatureSection",
+  eyebrow: st.eyebrow,
+  heading: st.heading,
+  quote: st.quote,
+  name: st.name,
+  meta: st.meta,
+  initials: st.initials,
+  facts: withKeys(st.facts),
+  footLink: cta(st.footLink),
+});
+
+/** The section is a pointer; the questions live in their own document. */
+const faqSection = (f: typeof tax.faq) => ({
+  _type: "faqSection",
+  eyebrow: f.eyebrow,
+  heading: f.heading,
+  side: f.side,
+  faq: { _type: "reference", _ref: f.faqId },
+});
+
+const questionGridSection = (
+  q: QuestionGridContent,
+  background?: typeof stone,
+) => ({
+  _type: "questionGridSection",
+  ...(background ? { background } : {}),
+  eyebrow: q.eyebrow,
+  heading: q.heading,
+  side: q.side,
+  cards: withKeys(q.cards),
+  footLink: cta(q.footLink),
+});
+
+const dualPathSection = (f: typeof tax.final) => ({
+  _type: "dualPathCtaSection",
+  eyebrow: f.eyebrow,
+  heading: f.heading,
+  paths: withKeys(
+    f.paths.map((p) => ({
+      kind: p.kind,
+      title: p.title,
+      body: p.body,
+      cta: cta(p.cta),
+      variant: p.variant,
+    })),
+  ),
+});
+
+const faqDoc = (f: typeof physicianTaxFaqs) => ({
+  _id: f.id,
+  _type: "faq",
+  title: f.title,
+  description: f.description,
+  items: withKeys(
+    f.items.map((item) => ({
+      _type: "faqItem",
+      question: item.question,
+      answer: item.answer,
+      ...(item.cta ? { cta: cta(item.cta) } : {}),
+    })),
+  ),
+});
+
+const questionsGroup = {
+  _id: hub.group.id,
+  _type: "pageGroup",
+  title: hub.group.title,
+  slug: { _type: "slug", current: hub.group.slug },
+  description: hub.group.description,
+  order: hub.group.order,
+};
+
+const groupRef = { _type: "reference", _ref: hub.group.id };
+
+/** The group landing page — short, and there to route people onward. */
+const questionsHub = {
+  _id: hub.meta.id,
+  _type: "page",
+  title: hub.meta.title,
+  slug: { _type: "slug", current: hub.meta.slug },
+  group: groupRef,
+  isGroupIndex: true,
+  sections: withKeys([
+    heroSection(hub.hero),
+    questionGridSection(hub.questions),
+    checkupSection(hub.checkup),
+    dualPathSection(hub.final),
+  ]),
+};
+
+/**
+ * Both question pages run the same spine: hero → the signs → the mechanism →
+ * checkup → book → story → FAQ → the other questions → closing CTA.
+ */
+const questionPage = (
+  q: QuestionPageModule,
+  stages: typeof tax.leaks,
+) => ({
+  _id: q.meta.id,
+  _type: "page",
+  title: q.meta.title,
+  slug: { _type: "slug", current: q.meta.slug },
+  group: groupRef,
+  isGroupIndex: false,
+  sections: withKeys([
+    heroSection(q.hero),
+    differenceSection(q.signs),
+    stageSection(stages),
+    checkupSection(q.checkup),
+    bookSection(q.book),
+    storySection(q.story),
+    faqSection(q.faq),
+    questionGridSection(q.others, stone),
+    dualPathSection(q.final),
+  ]),
+});
+
+const taxPage = questionPage(tax, tax.leaks);
+const corporationPage = questionPage(corporation, corporation.structure);
+
 /**
  * `title` is set only when the document is first created, then never touched
  * again — renaming a page in the Studio must survive a re-seed. Everything
@@ -205,13 +438,23 @@ async function clearDraft(id: string) {
   return null;
 }
 
+const blocks = [faqDoc(physicianTaxFaqs), faqDoc(medicalCorporationFaqs)];
+const pages = [homepage, settings, questionsHub, taxPage, corporationPage];
+
 const cleared = (
-  await Promise.all([clearDraft("homepage"), clearDraft("siteSettings")])
+  await Promise.all(
+    [...blocks, ...pages, questionsGroup].map((d) => clearDraft(d._id)),
+  )
 ).filter(Boolean);
 if (cleared.length) {
   console.log(`Removed stale drafts: ${cleared.join(", ")}`);
 }
 
-const results = await Promise.all([upsert(homepage), upsert(settings)]);
-console.log(`Seeded: ${results.join(", ")}`);
+// Referenced documents first. Sanity rejects a reference to a document that
+// does not exist yet, so the FAQ blocks and the page group have to land before
+// the pages that point at them.
+await Promise.all([...blocks.map(upsert), upsert(questionsGroup)]);
+
+const results = await Promise.all(pages.map(upsert));
+console.log(`Seeded: ${[...blocks, questionsGroup].length} blocks + ${results.join(", ")}`);
 console.log(`→ https://localhost:3100/studio`);
