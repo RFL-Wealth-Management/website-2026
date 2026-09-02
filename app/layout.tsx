@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Lora, Inter } from "next/font/google";
+
+import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
+
 import "./globals.css";
 
 /**
@@ -21,11 +24,10 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "RFL Wealth Management",
-    template: "%s · RFL Wealth Management",
+    default: SITE_NAME,
+    template: `%s · ${SITE_NAME}`,
   },
-  description:
-    "Integrated financial planning built for Canadian physicians — tax, corporation, investments, insurance, estate and retirement, coordinated around one plan.",
+  description: SITE_DESCRIPTION,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

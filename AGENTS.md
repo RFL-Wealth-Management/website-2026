@@ -61,6 +61,21 @@ imports** — Turbopack caches the resolved module graph, so a running dev serve
 keeps reporting the old import even though `next build` is green. Browser
 console history survives the restart too; check `preview_logs` for the truth.
 
+**Never put a `.` in a Sanity document `_id`.** A dotted id (`page.am-i-paying-too-much-tax`) creates the document successfully and it is visible in the
+Studio — but the public dataset will not serve it to an unauthenticated client,
+so the site 404s while the Studio insists the page is right there. Nothing
+errors; the seed script reports success. Use hyphens: `page-am-i-paying-too-much-tax`.
+Verify with an unauthenticated query, not a tokened one:
+
+```
+curl -s "https://<projectId>.api.sanity.io/v2026-08-20/data/query/production?query=*%5B_type%3D%3D%22page%22%5D%7B_id%7D"
+```
+
+**Section backgrounds are set in content, not guessed.** Every section component
+has a fallback colour, and two adjacent sections whose fallbacks match read as
+one long block. `scripts/seed.ts` sets `background: { color: "stone" }`
+explicitly on the sections where that would happen — see the `stone` const there.
+
 **Do not run `npm audit fix --force`.** It "fixes" by installing `sanity@5` —
 a downgrade from the 6.x we're on. The remaining advisories are all `js-yaml@3`
 under `@sanity/cli → @vercel/frameworks`: CLI-only, never bundled into the app.
@@ -97,14 +112,19 @@ signed-URL route, or held in a private dataset — decide before building Phase 
 
 ```
 app/                    routes, API handlers, /studio mount
+  page.tsx              homepage (isHomepage == true)
+  [...slug]/            every other page — /<group>/<page>
+components/PageShell    header + hero lift + main + footer, shared by both
 components/primitives/  design-system atoms          (Phase 1)
 components/sections/    page-builder sections        (Phase 2+)
+  Section.tsx           the _type → component switch
 lib/                    templates, forms, wizard, seo, links
+  paths.ts              the single source for what a page's URL is
+  content/              repo-authored copy, seeded by scripts/seed.ts
 sanity/
   env.ts                env assertions — throws loudly, never falls back
   lib/                  client, image builder, queries
   schemas/              documents/ objects/ singletons/
-content/                repo-authored content        (Phase 3B)
 ```
 
 ## Commands

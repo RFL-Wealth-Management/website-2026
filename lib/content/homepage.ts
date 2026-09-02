@@ -5,6 +5,13 @@
  * so the section components below don't change when content moves to the CMS.
  */
 
+import {
+  CORPORATION_PATH,
+  GROUP_PATH,
+  QUESTION_LINKS,
+  TAX_PATH,
+} from "./questions/paths.ts";
+
 type NavLink = { label: string; href: string };
 type NavEntry = NavLink & { children?: readonly NavLink[] };
 
@@ -12,22 +19,12 @@ export const nav: { items: readonly NavEntry[]; cta: NavLink } = {
   items: [
     {
       label: "Financial Questions",
-      href: "#questions",
-      // Placeholder hrefs: each of these becomes its own `page` document
-      // (§3 of docs/PLAN.md) once the question pages are built. Until then
-      // they anchor to the grid on the homepage rather than dead-ending on "#".
-      children: [
-        { label: "Am I Paying Too Much Tax?", href: "#questions" },
-        {
-          label: "Is My Medical Corporation Set Up Properly?",
-          href: "#questions",
-        },
-        { label: "Am I Investing in the Right Places?", href: "#questions" },
-        { label: "How Much Is Enough?", href: "#questions" },
-        { label: "Can I Afford to Work Less?", href: "#questions" },
-        { label: "What Happens if I Cannot Work?", href: "#questions" },
-        { label: "Am I Getting Truly Unbiased Advice?", href: "#questions" },
-      ],
+      href: GROUP_PATH,
+      // Two of these are real pages now. The other five still anchor to the
+      // grid on the homepage rather than dead-ending on "#", and pick up a
+      // real path the moment their page is written — the hrefs all come from
+      // lib/content/questions/paths.ts.
+      children: QUESTION_LINKS,
     },
     { label: "How RFL Helps", href: "#works" },
     { label: "Tax Free MD", href: "#book" },
@@ -56,18 +53,43 @@ export const questions = {
   eyebrow: "Financial questions",
   heading: "The questions you're already asking yourself.",
   side: "Discovery starts with your questions — not our service categories. Each one opens a page built to actually answer it.",
+  // Six cards, not the seven in the nav: this grid is three columns and reads
+  // best filled exactly twice. The wording differs from the nav's on purpose —
+  // these are first-person, the menu's are titles — but the hrefs must match,
+  // so both come from lib/content/questions/paths.ts.
   cards: [
-    { q: "Am I paying more tax than I need to?", tag: "Tax efficiency" },
+    {
+      q: "Am I paying more tax than I need to?",
+      tag: "Tax efficiency",
+      href: TAX_PATH,
+    },
     {
       q: "Is my medical corporation structured properly?",
       tag: "Corporate structure",
+      href: CORPORATION_PATH,
     },
-    { q: "Is my investment strategy actually working?", tag: "Investments" },
-    { q: "Am I on track — or just earning well?", tag: "Retirement readiness" },
-    { q: "Could I afford to work less?", tag: "Lifestyle planning" },
-    { q: "Is my current advice truly unbiased?", tag: "Independent advice" },
+    {
+      q: "Is my investment strategy actually working?",
+      tag: "Investments",
+      href: "#questions",
+    },
+    {
+      q: "Am I on track — or just earning well?",
+      tag: "Retirement readiness",
+      href: "#questions",
+    },
+    {
+      q: "Could I afford to work less?",
+      tag: "Lifestyle planning",
+      href: "#questions",
+    },
+    {
+      q: "Is my current advice truly unbiased?",
+      tag: "Independent advice",
+      href: "#questions",
+    },
   ],
-  footLink: { label: "Explore My Questions", href: "#" },
+  footLink: { label: "Explore My Questions", href: GROUP_PATH },
 };
 
 export const checkup = {

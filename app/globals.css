@@ -83,9 +83,14 @@
     text-decoration: none;
   }
 
-  /* Carried over from the mockup deliberately — do not reset. */
+  /* Carried over from the mockup deliberately — do not reset.
+     `summary` is not in the mockup's list because the mockup had no
+     accordion; the FAQ section's disclosure toggles are native <summary>
+     elements, which are focusable and would otherwise be the only
+     keyboard target on the site with no visible ring. */
   a:focus-visible,
   button:focus-visible,
+  summary:focus-visible,
   input:focus-visible,
   select:focus-visible,
   textarea:focus-visible,
