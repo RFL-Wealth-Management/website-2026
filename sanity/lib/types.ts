@@ -1,6 +1,7 @@
 import type { Image } from "sanity";
 
 import type { BackgroundData } from "@/lib/background";
+import type { HeroLayout } from "@/lib/hero-layouts";
 
 export type Cta = { label?: string; href?: string };
 
@@ -82,6 +83,8 @@ export type CtaPath = {
 
 export type HeroSectionData = SectionBase & {
   _type: "heroSection";
+  /** Which arrangement to render — see lib/hero-layouts.ts. */
+  layout?: HeroLayout;
   eyebrow?: string;
   headline?: string;
   headlineAlt?: string;

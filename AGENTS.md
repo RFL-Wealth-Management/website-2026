@@ -71,10 +71,42 @@ Verify with an unauthenticated query, not a tokened one:
 curl -s "https://<projectId>.api.sanity.io/v2026-08-20/data/query/production?query=*%5B_type%3D%3D%22page%22%5D%7B_id%7D"
 ```
 
+**`npm run seed` is targeted, and a bare run refuses.** It used to write every
+document on every run, so seeding one page rewrote the homepage from
+`lib/content/homepage.ts` — wiping images uploaded in the Studio and hrefs
+edited there. Name what you want written:
+
+```
+npm run seed                                    # lists targets, writes nothing
+npm run seed -- page-am-i-paying-too-much-tax   # writes exactly that
+npm run seed -- homepage --dry                  # shows the plan
+npm run seed -- --all                           # fresh dataset only
+```
+
+A target is **replaced**, not merged: the whole `sections` array comes from
+`lib/content/`, including images nested in sections. Only `title` survives (set
+on create, never patched). Referenced documents (the group, the FAQ blocks) are
+created if missing but never rewritten unless named. Drafts of a target abort
+the run unless you pass `--clear-drafts` — the Studio shows the draft, not what
+the script wrote, so seeding under one looks like a no-op.
+
+Consequence: **once a document is hand-edited in the Studio, stop seeding it**
+unless you first port the edit back into `lib/content/`.
+
 **Section backgrounds are set in content, not guessed.** Every section component
 has a fallback colour, and two adjacent sections whose fallbacks match read as
 one long block. `scripts/seed.ts` sets `background: { color: "stone" }`
 explicitly on the sections where that would happen — see the `stone` const there.
+
+**Custom Studio inputs: plain elements, not `@sanity/ui` layout components.**
+`Card`, `Grid`, `Stack` and `Text` type their spacing and responsive props
+(`padding`, `space`, `columns`, `size`) against a theme augmentation the Studio
+supplies at runtime but `tsc --noEmit` never sees, so on @sanity/ui 4 every one
+of them fails `npm run typecheck` as `Type 'number' is not assignable to type
+'undefined'`. Style with plain elements and the Studio's CSS variables
+(`--card-bg-color`, `--card-border-color`, `--card-muted-fg-color`,
+`--card-focus-ring-color`) instead — see
+`sanity/components/HeroLayoutInput.tsx`.
 
 **Do not run `npm audit fix --force`.** It "fixes" by installing `sanity@5` —
 a downgrade from the 6.x we're on. The remaining advisories are all `js-yaml@3`

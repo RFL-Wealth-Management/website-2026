@@ -1,18 +1,23 @@
 /**
- * Seeds the site's repo-authored content into Sanity from lib/content/.
+ * Seeds repo-authored content from lib/content/ into Sanity.
  *
- *   npm run seed
+ *   npm run seed                     list the targets, write nothing
+ *   npm run seed -- homepage         write exactly one document
+ *   npm run seed -- page-am-i-paying-too-much-tax
+ *   npm run seed -- --all            write everything (fresh dataset only)
+ *   npm run seed -- <target> --dry   show the plan without writing
  *
- * Writes: the homepage, site settings, the Financial Questions group and its
- * three pages, and the two reusable FAQ documents those pages reference.
+ * NOT safe to re-run blindly, which is why a bare run refuses. Each target it
+ * writes is REPLACED from lib/content/ — the whole `sections` array, including
+ * images uploaded into a section and hrefs edited in the Studio. Only `title`
+ * survives (set on create, never patched again).
  *
- * Safe to re-run. Uses createIfNotExists + a targeted patch rather than
- * createOrReplace, so images and edits made in the Studio survive a re-seed.
- * Only the fields listed below are overwritten; image fields are never touched.
+ * So: the content files are the source of truth for any document you name.
+ * Edit lib/content/, then seed that one target. Never seed a document whose
+ * current state in the Studio is newer than the repo.
  *
- * One thing it does clobber: `navItems`. Nav edits made in the Studio are
- * overwritten by whatever lib/content/homepage.ts says. Change the content
- * file, not the Studio, if you want a nav change to survive.
+ * Drafts are left alone unless you pass --clear-drafts; the script stops rather
+ * than write under a draft the Studio would keep showing you instead.
  */
 
 import { createClient } from "@sanity/client";
@@ -411,8 +416,16 @@ const corporationPage = questionPage(corporation, corporation.structure);
 
 /**
  * `title` is set only when the document is first created, then never touched
- * again — renaming a page in the Studio must survive a re-seed. Everything
- * else is patched; image and file fields are never included in `fields`.
+ * again — renaming a page in the Studio must survive a re-seed.
+ *
+ * Everything else in `fields` is REPLACED, not merged. That includes the whole
+ * `sections` array — so any image uploaded into a section, any href edited in
+ * the Studio, and any section reordering is overwritten by whatever the
+ * lib/content/ file says. (The old comment here claimed "image fields are never
+ * touched"; that only ever held for *top-level* image fields, of which there
+ * are none. Images live inside sections.)
+ *
+ * This is why the seed is targeted: never write a document you did not name.
  */
 async function upsert(doc: Record<string, unknown> & { _id: string }) {
   const { _id, _type, title, ...fields } = doc;
@@ -421,40 +434,130 @@ async function upsert(doc: Record<string, unknown> & { _id: string }) {
   return _id;
 }
 
-/**
- * Drop any draft first. Sanity shows the draft in preference to the published
- * document, so a draft created before this seed would still render as empty in
- * the Studio — and publishing it would wipe what we just wrote.
- */
-async function clearDraft(id: string) {
-  const draftId = `drafts.${id}`;
-  const exists = await client.fetch<string | null>(`*[_id == $id][0]._id`, {
-    id: draftId,
+/** Create the document if it is missing, but never overwrite an existing one. */
+async function ensure(doc: Record<string, unknown> & { _id: string }) {
+  const { _id, _type, title } = doc;
+  await client.createIfNotExists({ _id, _type: _type as string, title });
+  return _id;
+}
+
+async function draftExists(id: string) {
+  const found = await client.fetch<string | null>(`*[_id == $id][0]._id`, {
+    id: `drafts.${id}`,
   });
-  if (exists) {
-    await client.delete(draftId);
-    return draftId;
+  return Boolean(found);
+}
+
+/**
+ * Every seedable document, by target name. `deps` are documents a target
+ * references: they must exist before the target lands (Sanity rejects a
+ * reference to a missing document), but they are only *created* if absent —
+ * seeding a page never rewrites the FAQ blocks or the group it points at.
+ */
+const registry = {
+  homepage: { doc: homepage, deps: [] },
+  settings: { doc: settings, deps: [] },
+  "faq-physician-tax": { doc: faqDoc(physicianTaxFaqs), deps: [] },
+  "faq-medical-corporation": { doc: faqDoc(medicalCorporationFaqs), deps: [] },
+  [hub.group.id]: { doc: questionsGroup, deps: [] },
+  [hub.meta.id]: { doc: questionsHub, deps: [questionsGroup] },
+  [tax.meta.id]: {
+    doc: taxPage,
+    deps: [questionsGroup, faqDoc(physicianTaxFaqs)],
+  },
+  [corporation.meta.id]: {
+    doc: corporationPage,
+    deps: [questionsGroup, faqDoc(medicalCorporationFaqs)],
+  },
+} satisfies Record<
+  string,
+  { doc: Record<string, unknown> & { _id: string }; deps: { _id: string }[] }
+>;
+
+type Target = keyof typeof registry;
+
+const args = process.argv.slice(2);
+const flags = new Set(args.filter((a) => a.startsWith("--")));
+const named = args.filter((a) => !a.startsWith("--"));
+
+const usage = () => {
+  console.log("Usage: npm run seed -- <target> [target…] [--all] [--dry] [--clear-drafts]\n");
+  console.log("Targets:");
+  for (const t of Object.keys(registry)) console.log(`  ${t}`);
+  console.log("\n  --all           write every target (fresh dataset only)");
+  console.log("  --dry           print what would be written, write nothing");
+  console.log("  --clear-drafts  delete drafts of the targeted documents first");
+};
+
+if (flags.has("--help") || (!named.length && !flags.has("--all"))) {
+  usage();
+  if (!flags.has("--help")) {
+    console.error(
+      "\nRefusing to write: name the documents to seed.\n" +
+        "A bare `npm run seed` used to rewrite every page from lib/content/,\n" +
+        "clobbering anything edited in the Studio.",
+    );
+    process.exit(1);
   }
-  return null;
+  process.exit(0);
 }
 
-const blocks = [faqDoc(physicianTaxFaqs), faqDoc(medicalCorporationFaqs)];
-const pages = [homepage, settings, questionsHub, taxPage, corporationPage];
+const unknown = named.filter((n) => !(n in registry));
+if (unknown.length) {
+  console.error(`Unknown target(s): ${unknown.join(", ")}\n`);
+  usage();
+  process.exit(1);
+}
 
-const cleared = (
+const targets = (
+  flags.has("--all") ? (Object.keys(registry) as Target[]) : (named as Target[])
+).filter((t, i, all) => all.indexOf(t) === i);
+
+// Dependencies of the targeted documents, minus any that are themselves targeted.
+const targetIds = new Set(targets.map((t) => registry[t].doc._id));
+const deps = targets
+  .flatMap((t) => registry[t].deps)
+  .filter((d) => !targetIds.has(d._id))
+  .filter((d, i, all) => all.findIndex((o) => o._id === d._id) === i);
+
+console.log(`Writing: ${targets.map((t) => registry[t].doc._id).join(", ")}`);
+if (deps.length) {
+  console.log(`Ensuring exists (not overwritten): ${deps.map((d) => d._id).join(", ")}`);
+}
+
+if (flags.has("--dry")) {
+  console.log("\n--dry: nothing written.");
+  process.exit(0);
+}
+
+// Sanity shows a draft in preference to the published document, so a stale
+// draft would still render as empty in the Studio — and publishing it would
+// wipe what we just wrote. But a draft may equally be unpublished work worth
+// keeping, so deleting one is opt-in and scoped to the targeted documents.
+const drafts = (
   await Promise.all(
-    [...blocks, ...pages, questionsGroup].map((d) => clearDraft(d._id)),
+    [...targetIds].map(async (id) => ((await draftExists(id)) ? id : null)),
   )
-).filter(Boolean);
-if (cleared.length) {
-  console.log(`Removed stale drafts: ${cleared.join(", ")}`);
+).filter((id): id is string => Boolean(id));
+
+if (drafts.length) {
+  if (flags.has("--clear-drafts")) {
+    await Promise.all(drafts.map((id) => client.delete(`drafts.${id}`)));
+    console.log(`Removed drafts: ${drafts.join(", ")}`);
+  } else {
+    console.error(
+      `\nRefusing to write: unpublished drafts exist for ${drafts.join(", ")}.\n` +
+        "The Studio shows the draft, not what this script writes, so the seed\n" +
+        "would look like it did nothing — and publishing the draft would undo it.\n" +
+        "Publish or discard them in the Studio, or re-run with --clear-drafts.",
+    );
+    process.exit(1);
+  }
 }
 
-// Referenced documents first. Sanity rejects a reference to a document that
-// does not exist yet, so the FAQ blocks and the page group have to land before
-// the pages that point at them.
-await Promise.all([...blocks.map(upsert), upsert(questionsGroup)]);
+// Referenced documents first.
+await Promise.all(deps.map(ensure));
+const written = await Promise.all(targets.map((t) => upsert(registry[t].doc)));
 
-const results = await Promise.all(pages.map(upsert));
-console.log(`Seeded: ${[...blocks, questionsGroup].length} blocks + ${results.join(", ")}`);
-console.log(`→ https://localhost:3100/studio`);
+console.log(`\nSeeded: ${written.join(", ")}`);
+console.log(`→ http://localhost:3100/studio`);

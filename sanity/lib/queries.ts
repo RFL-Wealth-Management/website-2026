@@ -18,6 +18,7 @@ const SECTIONS_PROJECTION = /* groq */ `
     background{ image, overlay, color, parallax },
 
     _type == "heroSection" => {
+      layout,
       eyebrow, headline, headlineAlt, lede,
       primaryCta, primaryNote, secondaryCta,
       image, chip
