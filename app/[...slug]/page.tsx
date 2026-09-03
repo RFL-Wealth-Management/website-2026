@@ -21,10 +21,12 @@ import type {
   SiteSettingsData,
 } from "@/sanity/lib/types";
 
-// Matches the homepage's window. `dynamicParams` stays at its default of true
-// so a page published in the Studio after a deploy renders on first request
-// instead of 404ing until the next build.
-export const revalidate = 60;
+// Matches the homepage — see the note there on what dynamic rendering costs.
+// `dynamicParams` stays at its default of true so a page published in the
+// Studio after a deploy renders on first request instead of 404ing until the
+// next build. generateStaticParams still runs at build time, but at revalidate
+// 0 its output is no longer what gets served.
+export const revalidate = 0;
 
 export async function generateStaticParams() {
   const rows = await client.fetch<PagePathRow[]>(PAGE_PATHS_QUERY);
