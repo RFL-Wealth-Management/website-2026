@@ -9,10 +9,13 @@ import type {
   SiteSettingsData,
 } from "@/sanity/lib/types";
 
-// Re-fetch periodically until the Live Content API lands with the
-// Presentation tool. A failed revalidation keeps serving the last good page,
-// so this window is also the site's buffer against a brief Sanity outage.
-export const revalidate = 60;
+// Temporarily dynamic: every request re-reads Sanity, so Studio edits show up
+// immediately instead of within the next window. This gives up the buffer the
+// 60s window bought us — there is no last-good page to keep serving, so a
+// Sanity blip now goes straight to /503. Restore a positive value once the
+// content settles, or when the Live Content API lands with the Presentation
+// tool and makes the trade-off unnecessary.
+export const revalidate = 0;
 
 /**
  * There are no content fallbacks: Sanity is the only source. Anything that
